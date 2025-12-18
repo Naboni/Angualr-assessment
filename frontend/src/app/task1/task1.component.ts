@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 // Optional: You can use the MessageService from services/message.service.ts instead of HttpClient directly
 // import { MessageService, Message } from '../services/message.service';
@@ -50,7 +51,7 @@ interface Workspace {
 @Component({
   selector: 'app-task1',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="task1-container">
       <h2>Task 1: Workspace Chat Messages Display</h2>
@@ -95,6 +96,22 @@ interface Workspace {
           </span>
         </div>
 
+        <!-- Search Box -->
+        <div class="search-container">
+          <input 
+            type="text" 
+            class="search-input"
+            placeholder="🔍 Search messages or authors..."
+            [(ngModel)]="searchTerm"
+          />
+          <span *ngIf="searchTerm" class="search-results">
+            Found {{ filteredMessages.length }} of {{ messages.length }} messages
+          </span>
+          <button *ngIf="searchTerm" class="clear-search" (click)="searchTerm = ''">
+            ✕ Clear
+          </button>
+        </div>
+
         <!-- Empty State -->
         <div *ngIf="messages.length === 0" class="empty-state">
           <p>No messages yet. Be the first to send a message!</p>
@@ -102,7 +119,7 @@ interface Workspace {
 
         <!-- Messages List -->
         <div class="messages-list">
-          <div *ngFor="let message of messages" class="message-item">
+          <div *ngFor="let message of filteredMessages" class="message-item">
             <div class="avatar" [style.background-color]="getAvatarColor(message.author.name)">
               {{ getInitials(message.author.name) }}
             </div>
@@ -267,6 +284,55 @@ interface Workspace {
       color: #9ca3af;
     }
 
+    /* Search Box */
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    .search-results {
+      font-size: 0.85rem;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+
+    .clear-search {
+      padding: 0.5rem 0.75rem;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      color: #6b7280;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .clear-search:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
     /* Empty State */
     .empty-state {
       text-align: center;
@@ -416,8 +482,24 @@ export class Task1Component implements OnInit, OnDestroy {
   
   // Pagination
   loadingMore: boolean = false;          // Loading state for "Load More"
+  
+  // Search/Filter
+  searchTerm: string = '';               // Search input value
 
   constructor(private http: HttpClient) { }
+
+  // Getter for filtered messages based on search term
+  get filteredMessages(): Message[] {
+    if (!this.searchTerm.trim()) {
+      return this.messages;
+    }
+    
+    const search = this.searchTerm.toLowerCase();
+    return this.messages.filter(message => 
+      message.content.toLowerCase().includes(search) ||
+      message.author.name.toLowerCase().includes(search)
+    );
+  }
 
   ngOnInit() {
     this.loadWorkspaceAndMessages();
