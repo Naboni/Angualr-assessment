@@ -118,6 +118,20 @@ interface Workspace {
             </div>
           </div>
         </div>
+
+        <!-- Load More Button -->
+        <div *ngIf="messages.length > 0" class="load-more-container">
+          <button 
+            *ngIf="hasMore" 
+            class="load-more-btn" 
+            (click)="loadMoreMessages()"
+            [disabled]="loadingMore">
+            {{ loadingMore ? 'Loading...' : 'Load More Messages' }}
+          </button>
+          <p *ngIf="!hasMore" class="no-more-messages">
+            You've reached the beginning of the conversation
+          </p>
+        </div>
       </div>
     </div>
   `,
@@ -347,6 +361,42 @@ interface Workspace {
       line-height: 1.5;
       white-space: pre-wrap;
     }
+
+    /* Load More */
+    .load-more-container {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .load-more-btn {
+      padding: 0.75rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .load-more-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .no-more-messages {
+      color: #9ca3af;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
   `]
 })
 export class Task1Component implements OnInit, OnDestroy {
@@ -363,6 +413,9 @@ export class Task1Component implements OnInit, OnDestroy {
   refreshSeconds: number = 30;           // Refresh every 30 seconds
   lastRefreshed: Date = new Date();      // Track last refresh time
   autoRefreshEnabled: boolean = true;    // Toggle for auto-refresh
+  
+  // Pagination
+  loadingMore: boolean = false;          // Loading state for "Load More"
 
   constructor(private http: HttpClient) { }
 
@@ -416,6 +469,31 @@ export class Task1Component implements OnInit, OnDestroy {
   // Toggle auto-refresh on/off
   toggleAutoRefresh() {
     this.autoRefreshEnabled = !this.autoRefreshEnabled;
+  }
+
+  // Load more messages (pagination)
+  loadMoreMessages() {
+    if (!this.workspace || this.loadingMore || !this.hasMore) return;
+    
+    this.loadingMore = true;
+    const nextPage = this.currentPage + 1;
+    
+    this.http.get<{ success: boolean; data: Message[]; page: number; pages: number; total: number }>(
+      `/api/workspaces/${this.workspace._id}/messages?page=${nextPage}`
+    ).subscribe({
+      next: (response) => {
+        // Append new messages to existing ones
+        this.messages = [...this.messages, ...(response.data || [])];
+        this.currentPage = response.page;
+        this.hasMore = response.page < response.pages;
+        this.totalMessages = response.total || this.messages.length;
+        this.loadingMore = false;
+      },
+      error: (err) => {
+        this.loadingMore = false;
+        console.error('Error loading more messages:', err);
+      }
+    });
   }
 
   // Fetches workspaces, then fetches messages for the first workspace
