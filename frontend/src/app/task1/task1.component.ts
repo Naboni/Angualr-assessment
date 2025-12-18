@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -148,7 +148,7 @@ interface Workspace {
         </div>
 
         <!-- Messages List -->
-        <div class="messages-list">
+        <div class="messages-list" #messagesContainer (scroll)="onMessagesScroll($event)">
           <ng-container *ngFor="let message of filteredMessages; let i = index">
             <!-- Date Separator -->
             <div *ngIf="shouldShowDateSeparator(i)" class="date-separator">
@@ -173,6 +173,15 @@ interface Workspace {
             </div>
           </ng-container>
         </div>
+
+        <!-- Scroll to Bottom Button (shows when scrolled up) -->
+        <button 
+          *ngIf="showScrollButton && messages.length > 0" 
+          class="scroll-btn"
+          (click)="scrollToBottom()"
+          title="Scroll to latest messages">
+          ↓ New Messages
+        </button>
 
         <!-- Load More Button -->
         <div *ngIf="messages.length > 0" class="load-more-container">
@@ -560,11 +569,64 @@ interface Workspace {
       color: #6b7280;
     }
 
-    /* Messages List */
+    /* Messages Container */
+    .messages-container {
+      position: relative;
+    }
+
+    /* Messages List - Scrollable */
     .messages-list {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      max-height: 450px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    /* Custom Scrollbar */
+    .messages-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages-list::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    .messages-list::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .messages-list::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Scroll to Bottom Button */
+    .scroll-btn {
+      position: sticky;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0.75rem auto;
+      display: block;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .scroll-btn:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
     }
 
     /* Date Separator */
@@ -839,6 +901,8 @@ interface Workspace {
   `]
 })
 export class Task1Component implements OnInit, OnDestroy {
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef;
+  
   messages: Message[] = [];           // Stores fetched messages
   workspace: Workspace | null = null; // Current workspace info
   workspaces: Workspace[] = [];       // All available workspaces
@@ -860,6 +924,9 @@ export class Task1Component implements OnInit, OnDestroy {
   
   // Search/Filter
   searchTerm: string = '';               // Search input value
+  
+  // Scroll
+  showScrollButton: boolean = false;     // Show/hide scroll to bottom button
   
   // Quick Send Message
   newMessageContent: string = '';        // Message input value
@@ -1017,6 +1084,8 @@ export class Task1Component implements OnInit, OnDestroy {
         this.hasMore = response.page < response.pages;
         this.totalMessages = response.total || this.messages.length;
         this.loading = false;
+        // Auto-scroll to bottom after messages load
+        setTimeout(() => this.scrollToBottom(), 100);
       },
       error: (err) => {
         this.loading = false;
@@ -1056,6 +1125,9 @@ export class Task1Component implements OnInit, OnDestroy {
         this.sending = false;
         this.sendSuccess = 'Message sent!';
         this.lastRefreshed = new Date();
+        
+        // Auto-scroll to show the new message
+        setTimeout(() => this.scrollToBottom(), 100);
         
         // Clear success message after 3 seconds
         setTimeout(() => {
@@ -1107,6 +1179,24 @@ export class Task1Component implements OnInit, OnDestroy {
     }
     
     return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Scroll to the bottom of the messages list
+  scrollToBottom() {
+    if (this.messagesContainer) {
+      const container = this.messagesContainer.nativeElement;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  // Handle scroll event to show/hide scroll button
+  onMessagesScroll(event: Event) {
+    const container = event.target as HTMLElement;
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    this.showScrollButton = distanceFromBottom > 100;
   }
 
   // Get the date group label for a message (Today, Yesterday, or formatted date)
