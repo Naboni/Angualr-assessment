@@ -308,9 +308,36 @@ export class Task1Component implements OnInit {
     });
   }
 
-  // Helper method to format date strings
+  // Helper method to format date as relative time (e.g., "5 minutes ago")
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleString();
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    // Less than 1 minute
+    if (diffInSeconds < 60) {
+      return 'Just now';
+    }
+
+    // Less than 1 hour
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+    }
+
+    // Less than 1 day
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
+    }
+
+    // Less than 1 week
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return diffInDays === 1 ? 'Yesterday' : `${diffInDays} days ago`;
+    }
+
+    // Older than 1 week - show actual date
+    return date.toLocaleDateString();
   }
 }
