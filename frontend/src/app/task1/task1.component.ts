@@ -207,7 +207,7 @@ interface Workspace {
               [(ngModel)]="newMessageContent"
               placeholder="Type your message here..."
               rows="3"
-              (keydown.enter)="$event.ctrlKey && sendMessage()"
+              (keydown.control.enter)="sendMessage()"
             ></textarea>
             <button 
               class="send-btn"
@@ -1015,9 +1015,14 @@ export class Task1Component implements OnInit, OnDestroy {
           if (response.data && response.data.length > 0) {
             this.workspaces = response.data;
             
-            // Priority: saved > default > first
-            const targetId = savedWorkspaceId || DEFAULT_WORKSPACE_ID;
-            const targetWorkspace = response.data.find(w => w._id === targetId);
+            // Try saved first, then default, then first available
+            let targetWorkspace = savedWorkspaceId 
+              ? response.data.find(w => w._id === savedWorkspaceId) 
+              : null;
+            
+            if (!targetWorkspace) {
+              targetWorkspace = response.data.find(w => w._id === DEFAULT_WORKSPACE_ID);
+            }
             
             this.workspace = targetWorkspace || response.data[0];
             this.selectedWorkspaceId = this.workspace._id;
