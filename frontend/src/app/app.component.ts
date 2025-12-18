@@ -22,7 +22,7 @@ import { WorkspaceService } from './services/workspace.service';
           <p>Initializing project...</p>
         </div>
         <div *ngIf="initError" class="init-error">
-          <p>⚠️ Initialization warning: {{ initError }}</p>
+          <p>Warning: {{ initError }}</p>
         </div>
         <router-outlet></router-outlet>
       </main>
@@ -35,10 +35,10 @@ import { WorkspaceService } from './services/workspace.service';
       flex-direction: column;
     }
     .app-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #0f766e;
       color: white;
       padding: 1rem 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .app-header h1 {
       margin: 0 0 0.5rem 0;

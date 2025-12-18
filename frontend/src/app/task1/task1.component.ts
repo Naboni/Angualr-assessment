@@ -111,10 +111,10 @@ interface Workspace {
             class="refresh-btn" 
             (click)="toggleAutoRefresh()"
             [class.active]="autoRefreshEnabled">
-            {{ autoRefreshEnabled ? '⏸ Pause' : '▶ Resume' }} Auto-refresh
+            {{ autoRefreshEnabled ? 'Pause' : 'Resume' }} Auto-refresh
           </button>
           <button class="refresh-btn manual" (click)="refreshMessages()">
-            🔄 Refresh Now
+            Refresh Now
           </button>
           <span class="last-updated">
             Last updated: {{ formatDate(lastRefreshed.toISOString()) }}
@@ -125,14 +125,14 @@ interface Workspace {
           <input 
             type="text" 
             class="search-input"
-            placeholder="🔍 Search messages or authors..."
+            placeholder="Search messages or authors..."
             [(ngModel)]="searchTerm"
           />
           <span *ngIf="searchTerm" class="search-results">
-            Found {{ filteredMessages.length }} of {{ messages.length }} messages
+            Found {{ filteredMessages.length }} of {{ messages.length }}
           </span>
           <button *ngIf="searchTerm" class="clear-search" (click)="searchTerm = ''">
-            ✕ Clear
+            Clear
           </button>
         </div>
 
@@ -169,7 +169,7 @@ interface Workspace {
           class="scroll-btn"
           (click)="scrollToBottom()"
           title="Scroll to latest messages">
-          ↓ New Messages
+          Jump to Latest
         </button>
 
         <div *ngIf="messages.length > 0" class="load-more-container">
@@ -186,10 +186,9 @@ interface Workspace {
         </div>
 
         <div class="send-message-container">
-          <div class="send-message-header">
-            <span class="send-icon">💬</span>
-            <span>Send a Message</span>
-          </div>
+            <div class="send-message-header">
+              <span>New Message</span>
+            </div>
           
           <div class="send-input-row">
             <label for="authorName">Your Name:</label>
@@ -220,12 +219,12 @@ interface Workspace {
           
           <p class="send-hint">Press Ctrl+Enter to send</p>
           
-          <div *ngIf="sendSuccess" class="send-success">
-            ✓ {{ sendSuccess }}
-          </div>
-          <div *ngIf="sendError" class="send-error">
-            ✗ {{ sendError }}
-          </div>
+            <div *ngIf="sendSuccess" class="send-success">
+              {{ sendSuccess }}
+            </div>
+            <div *ngIf="sendError" class="send-error">
+              {{ sendError }}
+            </div>
         </div>
 
       </div>
@@ -377,37 +376,37 @@ interface Workspace {
       gap: 0.75rem;
       margin-bottom: 1rem;
       padding: 0.75rem 1rem;
-      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
-      border-radius: 8px;
-      border: 1px solid #e0e7ff;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
     }
 
     .workspace-selector label {
       font-size: 0.9rem;
       font-weight: 500;
-      color: #4c1d95;
+      color: #475569;
     }
 
     .workspace-selector select {
       flex: 1;
       padding: 0.5rem 1rem;
-      border: 2px solid #c4b5fd;
-      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
       background: white;
       font-size: 0.95rem;
-      color: #374151;
+      color: #334155;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: border-color 0.15s;
     }
 
     .workspace-selector select:focus {
       outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
     }
 
     .workspace-selector select:hover {
-      border-color: #8b5cf6;
+      border-color: #94a3b8;
     }
 
     /* Workspace Header */
@@ -427,13 +426,14 @@ interface Workspace {
     }
 
     .workspace-type {
-      padding: 0.25rem 0.75rem;
-      background: #e0e7ff;
-      color: #4338ca;
-      border-radius: 999px;
-      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: #f0fdfa;
+      color: #0f766e;
+      border-radius: 3px;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .message-count {
@@ -475,19 +475,19 @@ interface Workspace {
     }
 
     .refresh-btn.active {
-      background: #dbeafe;
-      border-color: #60a5fa;
-      color: #1d4ed8;
+      background: #f0fdfa;
+      border-color: #5eead4;
+      color: #0f766e;
     }
 
     .refresh-btn.manual {
-      background: #ecfdf5;
-      border-color: #6ee7b7;
-      color: #047857;
+      background: #fff;
+      border-color: #0d9488;
+      color: #0d9488;
     }
 
     .refresh-btn.manual:hover {
-      background: #d1fae5;
+      background: #f0fdfa;
     }
 
     .last-updated {
@@ -515,8 +515,8 @@ interface Workspace {
 
     .search-input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
     }
 
     .search-input::placeholder {
@@ -597,21 +597,21 @@ interface Workspace {
       margin: 0.75rem auto;
       display: block;
       padding: 0.5rem 1rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #0d9488;
       color: white;
       border: none;
-      border-radius: 20px;
+      border-radius: 4px;
       font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.3);
+      transition: all 0.15s;
       z-index: 10;
     }
 
     .scroll-btn:hover {
-      transform: translateX(-50%) translateY(-2px);
-      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+      transform: translateX(-50%) translateY(-1px);
+      background: #0f766e;
     }
 
     /* Date Separator */
@@ -693,18 +693,18 @@ interface Workspace {
     }
 
     .message-type.text {
-      background: #dbeafe;
-      color: #1d4ed8;
+      background: #ecfeff;
+      color: #0e7490;
     }
 
     .message-type.file {
-      background: #fef3c7;
-      color: #b45309;
+      background: #fef9c3;
+      color: #a16207;
     }
 
     .message-type.system {
-      background: #e5e7eb;
-      color: #4b5563;
+      background: #f1f5f9;
+      color: #64748b;
     }
 
     .timestamp {
@@ -728,20 +728,20 @@ interface Workspace {
     }
 
     .load-more-btn {
-      padding: 0.75rem 2rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.95rem;
+      padding: 0.6rem 1.5rem;
+      background: #fff;
+      color: #0d9488;
+      border: 2px solid #0d9488;
+      border-radius: 4px;
+      font-size: 0.9rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .load-more-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: #0d9488;
+      color: white;
     }
 
     .load-more-btn:disabled {
@@ -758,23 +758,17 @@ interface Workspace {
     /* Send Message Form */
     .send-message-container {
       margin-top: 1.5rem;
-      padding: 1.25rem;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
+      padding: 1rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
     }
 
     .send-message-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       font-weight: 600;
-      color: #475569;
-    }
-
-    .send-icon {
-      font-size: 1.2rem;
+      font-size: 0.9rem;
+      color: #525252;
     }
 
     .send-input-row {
@@ -802,8 +796,8 @@ interface Workspace {
 
     .author-input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
     }
 
     .message-row {
@@ -824,8 +818,8 @@ interface Workspace {
 
     .message-textarea:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
     }
 
     .message-textarea::placeholder {
@@ -833,21 +827,20 @@ interface Workspace {
     }
 
     .send-btn {
-      padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 0.65rem 1.25rem;
+      background: #0d9488;
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.15s;
       white-space: nowrap;
     }
 
     .send-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: #0f766e;
     }
 
     .send-btn:disabled {
@@ -887,41 +880,31 @@ interface Workspace {
 export class Task1Component implements OnInit, OnDestroy {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   
-  messages: Message[] = [];           // Stores fetched messages
-  workspace: Workspace | null = null; // Current workspace info
-  workspaces: Workspace[] = [];       // All available workspaces
-  selectedWorkspaceId: string = '';   // Currently selected workspace ID (for dropdown)
-  loading: boolean = true;            // Shows loading spinner
-  error: string | null = null;        // Stores error message if API fails
-  currentPage: number = 1;            // Current page for pagination
-  hasMore: boolean = true;            // Are there more messages to load?
-  totalMessages: number = 0;          // Total message count from API
+  messages: Message[] = [];
+  workspace: Workspace | null = null;
+  workspaces: Workspace[] = [];
+  selectedWorkspaceId: string = '';
+  loading: boolean = true;
+  error: string | null = null;
+  currentPage: number = 1;
+  hasMore: boolean = true;
+  totalMessages: number = 0;
   
-  // Auto-refresh properties
-  private refreshInterval: any = null;   // Stores interval reference
-  refreshSeconds: number = 30;           // Refresh every 30 seconds
-  lastRefreshed: Date = new Date();      // Track last refresh time
-  autoRefreshEnabled: boolean = true;    // Toggle for auto-refresh
-  
-  // Pagination
-  loadingMore: boolean = false;          // Loading state for "Load More"
-  
-  // Search/Filter
-  searchTerm: string = '';               // Search input value
-  
-  // Scroll
-  showScrollButton: boolean = false;     // Show/hide scroll to bottom button
-  
-  // Send Message
-  newMessageContent: string = '';        // Message input value
-  authorName: string = 'Anonymous User'; // Default author name
-  sending: boolean = false;              // Sending state
-  sendSuccess: string | null = null;     // Success message
-  sendError: string | null = null;       // Error message
+  private refreshInterval: any = null;
+  refreshSeconds: number = 30;
+  lastRefreshed: Date = new Date();
+  autoRefreshEnabled: boolean = true;
+  loadingMore: boolean = false;
+  searchTerm: string = '';
+  showScrollButton: boolean = false;
+  newMessageContent: string = '';
+  authorName: string = 'Anonymous User';
+  sending: boolean = false;
+  sendSuccess: string | null = null;
+  sendError: string | null = null;
 
   constructor(private http: HttpClient) { }
 
-  // Getter for filtered messages based on search term
   get filteredMessages(): Message[] {
     if (!this.searchTerm.trim()) {
       return this.messages;
@@ -939,14 +922,12 @@ export class Task1Component implements OnInit, OnDestroy {
     this.startAutoRefresh();
   }
 
-  // Cleanup when component is destroyed (prevents memory leaks)
   ngOnDestroy() {
     this.stopAutoRefresh();
   }
 
-  // Start auto-refresh interval
   startAutoRefresh() {
-    if (this.refreshInterval) return; // Already running
+    if (this.refreshInterval) return;
     
     this.refreshInterval = setInterval(() => {
       if (this.autoRefreshEnabled && this.workspace && !this.loading) {
@@ -955,7 +936,6 @@ export class Task1Component implements OnInit, OnDestroy {
     }, this.refreshSeconds * 1000);
   }
 
-  // Stop auto-refresh interval
   stopAutoRefresh() {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
@@ -963,7 +943,6 @@ export class Task1Component implements OnInit, OnDestroy {
     }
   }
 
-  // Refresh messages without showing loading spinner
   refreshMessages() {
     if (!this.workspace) return;
     
@@ -981,17 +960,16 @@ export class Task1Component implements OnInit, OnDestroy {
     });
   }
 
-  // Toggle auto-refresh on/off
   toggleAutoRefresh() {
     this.autoRefreshEnabled = !this.autoRefreshEnabled;
   }
 
-  // Switch to a different workspace
   switchWorkspace(workspaceId: string) {
     const selected = this.workspaces.find(w => w._id === workspaceId);
     if (selected && selected._id !== this.workspace?._id) {
       this.workspace = selected;
       this.selectedWorkspaceId = workspaceId;
+      localStorage.setItem('selectedWorkspaceId', workspaceId);
       this.messages = [];
       this.searchTerm = '';
       this.currentPage = 1;
@@ -1001,7 +979,6 @@ export class Task1Component implements OnInit, OnDestroy {
     }
   }
 
-  // Load more messages (pagination)
   loadMoreMessages() {
     if (!this.workspace || this.loadingMore || !this.hasMore) return;
     
@@ -1012,7 +989,6 @@ export class Task1Component implements OnInit, OnDestroy {
       `/api/workspaces/${this.workspace._id}/messages?page=${nextPage}`
     ).subscribe({
       next: (response) => {
-        // Append new messages to existing ones
         this.messages = [...this.messages, ...(response.data || [])];
         this.currentPage = response.page;
         this.hasMore = response.page < response.pages;
@@ -1026,25 +1002,27 @@ export class Task1Component implements OnInit, OnDestroy {
     });
   }
 
-  // Fetches workspaces, then fetches messages for the first workspace
   loadWorkspaceAndMessages() {
     this.loading = true;
     this.error = null;
 
-    // Step 1: Fetch all workspaces to get the first one
+    const DEFAULT_WORKSPACE_ID = '694402bd45836b0654a07989';
+    const savedWorkspaceId = localStorage.getItem('selectedWorkspaceId');
+
     this.http.get<{ success: boolean; data: Workspace[] }>('/api/workspaces')
       .subscribe({
         next: (response) => {
           if (response.data && response.data.length > 0) {
-            // Store all workspaces for the selector
             this.workspaces = response.data;
-            // Got workspaces - save the first one
-            this.workspace = response.data[0];
+            
+            // Priority: saved > default > first
+            const targetId = savedWorkspaceId || DEFAULT_WORKSPACE_ID;
+            const targetWorkspace = response.data.find(w => w._id === targetId);
+            
+            this.workspace = targetWorkspace || response.data[0];
             this.selectedWorkspaceId = this.workspace._id;
-            // Now fetch messages for this workspace
             this.loadMessages(this.workspace._id);
           } else {
-            // No workspaces found
             this.loading = false;
             this.error = 'No workspaces found. Create one in Task 2!';
           }
@@ -1057,7 +1035,6 @@ export class Task1Component implements OnInit, OnDestroy {
       });
   }
 
-  // Fetches messages for a specific workspace
   loadMessages(workspaceId: string) {
     this.http.get<{ success: boolean; data: Message[]; page: number; pages: number; total: number }>(
       `/api/workspaces/${workspaceId}/messages`
@@ -1068,7 +1045,6 @@ export class Task1Component implements OnInit, OnDestroy {
         this.hasMore = response.page < response.pages;
         this.totalMessages = response.total || this.messages.length;
         this.loading = false;
-        // Auto-scroll to bottom after messages load
         setTimeout(() => this.scrollToBottom(), 100);
       },
       error: (err) => {
@@ -1079,7 +1055,6 @@ export class Task1Component implements OnInit, OnDestroy {
     });
   }
 
-  // Send a new message to the current workspace
   sendMessage() {
     if (!this.workspace || !this.newMessageContent.trim()) return;
     
@@ -1100,7 +1075,6 @@ export class Task1Component implements OnInit, OnDestroy {
       messageData
     ).subscribe({
       next: (response) => {
-        // Add the new message to the END of the list (newest at bottom)
         if (response.data) {
           this.messages = [...this.messages, response.data];
           this.totalMessages++;
@@ -1110,28 +1084,18 @@ export class Task1Component implements OnInit, OnDestroy {
         this.sendSuccess = 'Message sent!';
         this.lastRefreshed = new Date();
         
-        // Auto-scroll to show the new message
         setTimeout(() => this.scrollToBottom(), 100);
-        
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          this.sendSuccess = null;
-        }, 3000);
+        setTimeout(() => { this.sendSuccess = null; }, 3000);
       },
       error: (err) => {
         this.sending = false;
         this.sendError = 'Failed to send message. Please try again.';
         console.error('Error sending message:', err);
-        
-        // Clear error after 5 seconds
-        setTimeout(() => {
-          this.sendError = null;
-        }, 5000);
+        setTimeout(() => { this.sendError = null; }, 5000);
       }
     });
   }
 
-  // Get initials from a name (e.g., "John Doe" -> "JD")
   getInitials(name: string): string {
     if (!name) return '?';
     const words = name.trim().split(' ');
@@ -1141,22 +1105,11 @@ export class Task1Component implements OnInit, OnDestroy {
     return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
   }
 
-  // Generate a consistent color based on the name
   getAvatarColor(name: string): string {
     const colors = [
-      '#f87171', // red
-      '#fb923c', // orange
-      '#fbbf24', // amber
-      '#a3e635', // lime
-      '#34d399', // emerald
-      '#22d3ee', // cyan
-      '#60a5fa', // blue
-      '#a78bfa', // violet
-      '#f472b6', // pink
-      '#e879f9', // fuchsia
+      '#f87171', '#fb923c', '#fbbf24', '#a3e635', '#34d399',
+      '#22d3ee', '#60a5fa', '#a78bfa', '#f472b6', '#e879f9'
     ];
-    
-    // Create a simple hash from the name to pick a consistent color
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 2) - hash);
@@ -1165,7 +1118,6 @@ export class Task1Component implements OnInit, OnDestroy {
     return colors[Math.abs(hash) % colors.length];
   }
 
-  // Scroll to the bottom of the messages list
   scrollToBottom() {
     if (this.messagesContainer) {
       const container = this.messagesContainer.nativeElement;
@@ -1176,21 +1128,18 @@ export class Task1Component implements OnInit, OnDestroy {
     }
   }
 
-  // Handle scroll event to show/hide scroll button
   onMessagesScroll(event: Event) {
     const container = event.target as HTMLElement;
     const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
     this.showScrollButton = distanceFromBottom > 100;
   }
 
-  // Get the date group label for a message (Today, Yesterday, or formatted date)
   getDateGroup(dateString: string): string {
     const date = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
-    // Reset time for comparison
     const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
@@ -1209,11 +1158,9 @@ export class Task1Component implements OnInit, OnDestroy {
     }
   }
 
-  // Check if this message should show a date separator
-  // (i.e., it's the first message of a new date group)
   shouldShowDateSeparator(index: number): boolean {
     const messages = this.filteredMessages;
-    if (index === 0) return true; // Always show for first message
+    if (index === 0) return true;
     
     const currentDate = this.getDateGroup(messages[index].createdAt);
     const previousDate = this.getDateGroup(messages[index - 1].createdAt);
@@ -1221,36 +1168,22 @@ export class Task1Component implements OnInit, OnDestroy {
     return currentDate !== previousDate;
   }
 
-  // Helper method to format date as relative time (e.g., "5 minutes ago")
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    // Less than 1 minute
-    if (diffInSeconds < 60) {
-      return 'Just now';
-    }
+    if (diffInSeconds < 60) return 'Just now';
 
-    // Less than 1 hour
     const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) {
-      return diffInMinutes === 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
-    }
+    if (diffInMinutes < 60) return diffInMinutes === 1 ? '1 min ago' : `${diffInMinutes} min ago`;
 
-    // Less than 1 day
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) {
-      return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
-    }
+    if (diffInHours < 24) return diffInHours === 1 ? '1 hour ago' : `${diffInHours} hours ago`;
 
-    // Less than 1 week
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) {
-      return diffInDays === 1 ? 'Yesterday' : `${diffInDays} days ago`;
-    }
+    if (diffInDays < 7) return diffInDays === 1 ? 'Yesterday' : `${diffInDays} days ago`;
 
-    // Older than 1 week - show actual date
     return date.toLocaleDateString();
   }
 }

@@ -61,12 +61,12 @@ interface MessageResult {
       </p>
 
       <div *ngIf="error" class="error-message">
-        <span>✗</span> {{ error }}
+        {{ error }}
         <button class="dismiss-btn" (click)="error = null">×</button>
       </div>
 
       <div *ngIf="success" class="success-message">
-        <span>✓</span> {{ success }}
+        {{ success }}
         <button class="dismiss-btn" (click)="success = null">×</button>
       </div>
 
@@ -123,7 +123,7 @@ interface MessageResult {
       <div *ngIf="createdWorkspace">
         <div class="workspace-info-card">
           <div class="workspace-info-header">
-            <span class="check-icon">✓</span>
+            <span class="check-icon">OK</span>
             <div>
               <h4>{{ createdWorkspace.name }}</h4>
               <span class="workspace-type-badge">{{ createdWorkspace.type }}</span>
@@ -221,10 +221,10 @@ interface MessageResult {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 1rem;
-      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
       margin-bottom: 1rem;
-      font-weight: 500;
+      font-size: 0.9rem;
     }
 
     .error-message {
@@ -256,31 +256,31 @@ interface MessageResult {
     /* Form Card */
     .form-card {
       background: white;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1.25rem;
     }
 
     .form-header {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #f3f4f6;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     .step-number {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      width: 28px;
+      height: 28px;
+      background: #0d9488;
       color: white;
-      border-radius: 50%;
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
 
     .form-header h3 {
@@ -306,12 +306,12 @@ interface MessageResult {
     .form-group textarea,
     .form-group select {
       width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
       font-size: 0.95rem;
       font-family: inherit;
-      transition: all 0.2s;
+      transition: border-color 0.15s;
       box-sizing: border-box;
     }
 
@@ -319,8 +319,8 @@ interface MessageResult {
     .form-group textarea:focus,
     .form-group select:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.1);
     }
 
     .form-group input.invalid,
@@ -348,34 +348,32 @@ interface MessageResult {
     /* Submit Button */
     .submit-btn {
       width: 100%;
-      padding: 0.875rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 0.75rem;
+      background: #0d9488;
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.15s;
     }
 
     .submit-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      background: #0f766e;
     }
 
     .submit-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
-      transform: none;
     }
 
     /* Workspace Info Card */
     .workspace-info-card {
-      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-      border: 2px solid #86efac;
-      border-radius: 12px;
-      padding: 1.25rem;
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 6px;
+      padding: 1rem;
       margin-bottom: 1.5rem;
     }
 
@@ -387,31 +385,31 @@ interface MessageResult {
     }
 
     .check-icon {
-      width: 28px;
-      height: 28px;
-      background: #22c55e;
+      width: 24px;
+      height: 24px;
+      background: #0d9488;
       color: white;
-      border-radius: 50%;
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 0.9rem;
+      font-weight: 600;
+      font-size: 0.85rem;
     }
 
     .workspace-info-header h4 {
       margin: 0;
-      color: #166534;
-      font-size: 1.1rem;
+      color: #0f766e;
+      font-size: 1rem;
     }
 
     .workspace-type-badge {
       display: inline-block;
       padding: 0.15rem 0.5rem;
-      background: #bbf7d0;
-      color: #166534;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      background: #ccfbf1;
+      color: #0f766e;
+      border-radius: 3px;
+      font-size: 0.7rem;
       font-weight: 600;
       text-transform: uppercase;
       margin-left: 0.5rem;
@@ -419,19 +417,18 @@ interface MessageResult {
 
     .workspace-description {
       margin: 0.75rem 0;
-      color: #15803d;
+      color: #115e59;
       font-size: 0.9rem;
     }
 
     .reset-btn {
       background: none;
       border: none;
-      color: #166534;
-      font-size: 0.9rem;
+      color: #0d9488;
+      font-size: 0.85rem;
       cursor: pointer;
       padding: 0;
       text-decoration: underline;
-      opacity: 0.8;
     }
 
     .reset-btn:hover {
@@ -440,25 +437,25 @@ interface MessageResult {
 
     /* Sent Messages List */
     .sent-messages {
-      margin-top: 1.5rem;
-      padding: 1.25rem;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
+      margin-top: 1.25rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
     }
 
     .sent-messages h4 {
-      margin: 0 0 1rem 0;
-      color: #374151;
-      font-size: 1rem;
+      margin: 0 0 0.75rem 0;
+      color: #475569;
+      font-size: 0.9rem;
     }
 
     .sent-message-item {
       background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
       padding: 0.75rem;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     .sent-message-item:last-child {
@@ -497,29 +494,21 @@ interface MessageResult {
   `]
 })
 export class Task2Component {
-  // Forms
   workspaceForm: FormGroup;
   messageForm: FormGroup;
-  
-  // State
   createdWorkspace: WorkspaceResult | null = null;
   sentMessages: MessageResult[] = [];
   loading: boolean = false;
   error: string | null = null;
   success: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient
-  ) {
-    // Initialize workspace form with validators
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.workspaceForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       type: ['public']
     });
 
-    // Initialize message form with validators
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.minLength(1)]],
       authorName: ['Anonymous User', Validators.required],
@@ -527,17 +516,14 @@ export class Task2Component {
     });
   }
 
-  // Helper to check if a form field is invalid and touched
   isFieldInvalid(form: FormGroup, fieldName: string): boolean {
     const field = form.get(fieldName);
     return field ? field.invalid && (field.dirty || field.touched) : false;
   }
 
-  // Helper to get error message for a field
   getFieldError(form: FormGroup, fieldName: string): string {
     const field = form.get(fieldName);
     if (!field || !field.errors) return '';
-    
     if (field.errors['required']) return `${fieldName} is required`;
     if (field.errors['minlength']) {
       return `${fieldName} must be at least ${field.errors['minlength'].requiredLength} characters`;
@@ -545,7 +531,6 @@ export class Task2Component {
     return 'Invalid input';
   }
 
-  // Create workspace API call
   createWorkspace(): void {
     if (this.workspaceForm.invalid) {
       this.workspaceForm.markAllAsTouched();
@@ -572,7 +557,6 @@ export class Task2Component {
     });
   }
 
-  // Send message to the created workspace
   sendMessage(): void {
     if (this.messageForm.invalid || !this.createdWorkspace) {
       this.messageForm.markAllAsTouched();
@@ -599,7 +583,6 @@ export class Task2Component {
         this.sentMessages.push(response.data);
         this.success = 'Message sent successfully!';
         this.loading = false;
-        // Reset content field and mark it as untouched to avoid validation error
         this.messageForm.patchValue({ content: '' });
         this.messageForm.get('content')?.markAsUntouched();
         this.messageForm.get('content')?.markAsPristine();
@@ -611,7 +594,6 @@ export class Task2Component {
     });
   }
 
-  // Reset everything and start over
   resetForms(): void {
     this.createdWorkspace = null;
     this.sentMessages = [];
