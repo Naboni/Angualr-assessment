@@ -59,10 +59,43 @@ interface Workspace {
         Show messages in a simple list with author name, content, timestamp, and message type.
       </p>
       
-      <!-- TODO: Implement the messages display here -->
-      <div class="placeholder">
-        <p>Your implementation goes here...</p>
-        <p class="hint">Display messages in a list format showing: content, author name, timestamp, and message type.</p>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading">
+        <p>Loading messages...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="error">
+        <p>{{ error }}</p>
+        <button (click)="loadWorkspaceAndMessages()">Try Again</button>
+      </div>
+
+      <!-- Messages Display (only show when not loading and no error) -->
+      <div *ngIf="!loading && !error" class="messages-container">
+        <!-- Workspace Header -->
+        <div *ngIf="workspace" class="workspace-header">
+          <h3>{{ workspace.name }}</h3>
+          <span class="workspace-type">{{ workspace.type }}</span>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="messages.length === 0" class="empty-state">
+          <p>No messages yet. Be the first to send a message!</p>
+        </div>
+
+        <!-- Messages List -->
+        <div class="messages-list">
+          <div *ngFor="let message of messages" class="message-item">
+            <div class="message-header">
+              <span class="author">{{ message.author.name }}</span>
+              <span class="message-type" [class]="message.type">{{ message.type }}</span>
+              <span class="timestamp">{{ formatDate(message.createdAt) }}</span>
+            </div>
+            <div class="message-content">
+              {{ message.content }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -150,5 +183,11 @@ export class Task1Component implements OnInit {
         console.error('Error fetching messages:', err);
       }
     });
+  }
+
+  // Helper method to format date strings
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString();
   }
 }
