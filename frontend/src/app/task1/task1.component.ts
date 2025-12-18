@@ -60,9 +60,26 @@ interface Workspace {
         Show messages in a simple list with author name, content, timestamp, and message type.
       </p>
       
-      <!-- Loading State -->
-      <div *ngIf="loading" class="loading">
-        <p>Loading messages...</p>
+      <!-- Loading State - Skeleton -->
+      <div *ngIf="loading" class="skeleton-container">
+        <div class="skeleton-header">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-badge"></div>
+        </div>
+        <div class="skeleton-messages">
+          <div *ngFor="let i of [1, 2, 3, 4]" class="skeleton-message">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-row">
+                <div class="skeleton skeleton-name"></div>
+                <div class="skeleton skeleton-type"></div>
+                <div class="skeleton skeleton-time"></div>
+              </div>
+              <div class="skeleton skeleton-content"></div>
+              <div class="skeleton skeleton-content short"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Error State -->
@@ -73,6 +90,19 @@ interface Workspace {
 
       <!-- Messages Display (only show when not loading and no error) -->
       <div *ngIf="!loading && !error" class="messages-container">
+        <!-- Workspace Selector -->
+        <div *ngIf="workspaces.length > 1" class="workspace-selector">
+          <label for="workspace-select">Switch Workspace:</label>
+          <select 
+            id="workspace-select"
+            [(ngModel)]="selectedWorkspaceId"
+            (ngModelChange)="switchWorkspace($event)">
+            <option *ngFor="let ws of workspaces" [value]="ws._id">
+              {{ ws.name }} ({{ ws.type }})
+            </option>
+          </select>
+        </div>
+
         <!-- Workspace Header -->
         <div *ngIf="workspace" class="workspace-header">
           <h3>{{ workspace.name }}</h3>
@@ -165,12 +195,105 @@ interface Workspace {
       line-height: 1.6;
     }
 
-    /* Loading State */
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: #667eea;
-      font-size: 1.1rem;
+    /* Skeleton Loading */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    .skeleton-container {
+      padding: 1rem 0;
+    }
+
+    .skeleton-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .skeleton-title {
+      width: 200px;
+      height: 28px;
+    }
+
+    .skeleton-badge {
+      width: 70px;
+      height: 24px;
+      border-radius: 999px;
+    }
+
+    .skeleton-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .skeleton-message {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .skeleton-body {
+      flex: 1;
+    }
+
+    .skeleton-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .skeleton-name {
+      width: 120px;
+      height: 16px;
+    }
+
+    .skeleton-type {
+      width: 50px;
+      height: 16px;
+    }
+
+    .skeleton-time {
+      width: 80px;
+      height: 14px;
+      margin-left: auto;
+    }
+
+    .skeleton-content {
+      width: 100%;
+      height: 16px;
+      margin-bottom: 0.5rem;
+    }
+
+    .skeleton-content.short {
+      width: 60%;
     }
 
     /* Error State */
@@ -196,6 +319,46 @@ interface Workspace {
 
     .error button:hover {
       background: #b91c1c;
+    }
+
+    /* Workspace Selector */
+    .workspace-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+      border-radius: 8px;
+      border: 1px solid #e0e7ff;
+    }
+
+    .workspace-selector label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4c1d95;
+    }
+
+    .workspace-selector select {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      border: 2px solid #c4b5fd;
+      border-radius: 6px;
+      background: white;
+      font-size: 0.95rem;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .workspace-selector select:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .workspace-selector select:hover {
+      border-color: #8b5cf6;
     }
 
     /* Workspace Header */
@@ -468,6 +631,8 @@ interface Workspace {
 export class Task1Component implements OnInit, OnDestroy {
   messages: Message[] = [];           // Stores fetched messages
   workspace: Workspace | null = null; // Current workspace info
+  workspaces: Workspace[] = [];       // All available workspaces
+  selectedWorkspaceId: string = '';   // Currently selected workspace ID (for dropdown)
   loading: boolean = true;            // Shows loading spinner
   error: string | null = null;        // Stores error message if API fails
   currentPage: number = 1;            // Current page for pagination
@@ -553,6 +718,21 @@ export class Task1Component implements OnInit, OnDestroy {
     this.autoRefreshEnabled = !this.autoRefreshEnabled;
   }
 
+  // Switch to a different workspace
+  switchWorkspace(workspaceId: string) {
+    const selected = this.workspaces.find(w => w._id === workspaceId);
+    if (selected && selected._id !== this.workspace?._id) {
+      this.workspace = selected;
+      this.selectedWorkspaceId = workspaceId;
+      this.messages = [];
+      this.searchTerm = '';
+      this.currentPage = 1;
+      this.hasMore = true;
+      this.loading = true;
+      this.loadMessages(workspaceId);
+    }
+  }
+
   // Load more messages (pagination)
   loadMoreMessages() {
     if (!this.workspace || this.loadingMore || !this.hasMore) return;
@@ -588,8 +768,11 @@ export class Task1Component implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           if (response.data && response.data.length > 0) {
+            // Store all workspaces for the selector
+            this.workspaces = response.data;
             // Got workspaces - save the first one
             this.workspace = response.data[0];
+            this.selectedWorkspaceId = this.workspace._id;
             // Now fetch messages for this workspace
             this.loadMessages(this.workspace._id);
           } else {
