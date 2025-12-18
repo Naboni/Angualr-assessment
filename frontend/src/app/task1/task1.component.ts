@@ -92,21 +92,63 @@ interface Workspace {
   `]
 })
 export class Task1Component implements OnInit {
-  // TODO: Add your implementation here
-  // Suggested properties:
-  // - messages: Message[] = [];
-  // - workspace: Workspace | null = null;
-  // - loading: boolean = false;
-  // - error: string | null = null;
-  // - currentPage: number = 1;
-  // - hasMore: boolean = true;
+  messages: Message[] = [];           // Stores fetched messages
+  workspace: Workspace | null = null; // Current workspace info
+  loading: boolean = true;            // Shows loading spinner
+  error: string | null = null;        // Stores error message if API fails
+  currentPage: number = 1;            // Current page for pagination
+  hasMore: boolean = true;            // Are there more messages to load?
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    // TODO: 
-    // 1. Fetch a workspace (or use a hardcoded ID)
-    // 2. Fetch messages for that workspace
-    // 3. Handle loading and error states
+    this.loadWorkspaceAndMessages();
+  }
+
+  // Fetches workspaces, then fetches messages for the first workspace
+  loadWorkspaceAndMessages() {
+    this.loading = true;
+    this.error = null;
+
+    // Step 1: Fetch all workspaces to get the first one
+    this.http.get<{ success: boolean; data: Workspace[] }>('/api/workspaces')
+      .subscribe({
+        next: (response) => {
+          if (response.data && response.data.length > 0) {
+            // Got workspaces - save the first one
+            this.workspace = response.data[0];
+            // Now fetch messages for this workspace
+            this.loadMessages(this.workspace._id);
+          } else {
+            // No workspaces found
+            this.loading = false;
+            this.error = 'No workspaces found. Create one in Task 2!';
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = 'Failed to load workspaces. Please check if the backend is running.';
+          console.error('Error fetching workspaces:', err);
+        }
+      });
+  }
+
+  // Fetches messages for a specific workspace
+  loadMessages(workspaceId: string) {
+    this.http.get<{ success: boolean; data: Message[]; page: number; pages: number }>(
+      `/api/workspaces/${workspaceId}/messages`
+    ).subscribe({
+      next: (response) => {
+        this.messages = response.data || [];
+        this.currentPage = response.page;
+        this.hasMore = response.page < response.pages;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = 'Failed to load messages.';
+        console.error('Error fetching messages:', err);
+      }
+    });
   }
 }
