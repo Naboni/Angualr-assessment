@@ -60,13 +60,11 @@ interface MessageResult {
         Add basic validation and show success/error messages.
       </p>
 
-      <!-- Global Error Message -->
       <div *ngIf="error" class="error-message">
         <span>✗</span> {{ error }}
         <button class="dismiss-btn" (click)="error = null">×</button>
       </div>
 
-      <!-- Global Success Message -->
       <div *ngIf="success" class="success-message">
         <span>✓</span> {{ success }}
         <button class="dismiss-btn" (click)="success = null">×</button>
@@ -80,7 +78,6 @@ interface MessageResult {
         </div>
 
         <form [formGroup]="workspaceForm" (ngSubmit)="createWorkspace()">
-          <!-- Workspace Name -->
           <div class="form-group">
             <label for="name">Workspace Name *</label>
             <input 
@@ -95,7 +92,6 @@ interface MessageResult {
             </span>
           </div>
 
-          <!-- Workspace Description -->
           <div class="form-group">
             <label for="description">Description (optional)</label>
             <textarea 
@@ -106,7 +102,6 @@ interface MessageResult {
             ></textarea>
           </div>
 
-          <!-- Workspace Type -->
           <div class="form-group">
             <label for="type">Workspace Type</label>
             <select id="type" formControlName="type">
@@ -115,7 +110,6 @@ interface MessageResult {
             </select>
           </div>
 
-          <!-- Submit Button -->
           <button 
             type="submit" 
             class="submit-btn"
@@ -125,9 +119,87 @@ interface MessageResult {
         </form>
       </div>
 
-      <!-- Step 2: Workspace Created - Show Message Form (to be added next) -->
-      <div *ngIf="createdWorkspace" class="workspace-created">
-        <p>Workspace created! Message form coming in next step...</p>
+      <!-- Step 2: Workspace Created - Show Message Form -->
+      <div *ngIf="createdWorkspace">
+        <div class="workspace-info-card">
+          <div class="workspace-info-header">
+            <span class="check-icon">✓</span>
+            <div>
+              <h4>{{ createdWorkspace.name }}</h4>
+              <span class="workspace-type-badge">{{ createdWorkspace.type }}</span>
+            </div>
+          </div>
+          <p *ngIf="createdWorkspace.description" class="workspace-description">
+            {{ createdWorkspace.description }}
+          </p>
+          <button class="reset-btn" (click)="resetForms()">
+            ← Create Another Workspace
+          </button>
+        </div>
+
+        <div class="form-card">
+          <div class="form-header">
+            <span class="step-number">2</span>
+            <h3>Send a Message</h3>
+          </div>
+
+          <form [formGroup]="messageForm" (ngSubmit)="sendMessage()">
+            <div class="form-group">
+              <label for="authorName">Your Name *</label>
+              <input 
+                type="text" 
+                id="authorName"
+                formControlName="authorName"
+                placeholder="Enter your name"
+                [class.invalid]="isFieldInvalid(messageForm, 'authorName')"
+              />
+              <span *ngIf="isFieldInvalid(messageForm, 'authorName')" class="field-error">
+                {{ getFieldError(messageForm, 'authorName') }}
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="content">Message *</label>
+              <textarea 
+                id="content"
+                formControlName="content"
+                placeholder="Type your message here..."
+                rows="4"
+                [class.invalid]="isFieldInvalid(messageForm, 'content')"
+              ></textarea>
+              <span *ngIf="isFieldInvalid(messageForm, 'content')" class="field-error">
+                {{ getFieldError(messageForm, 'content') }}
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label for="messageType">Message Type</label>
+              <select id="messageType" formControlName="type">
+                <option value="text">Text</option>
+                <option value="file">File</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+
+            <button 
+              type="submit" 
+              class="submit-btn"
+              [disabled]="messageForm.invalid || loading">
+              {{ loading ? 'Sending...' : 'Send Message' }}
+            </button>
+          </form>
+        </div>
+
+        <div *ngIf="sentMessages.length > 0" class="sent-messages">
+          <h4>Sent Messages ({{ sentMessages.length }})</h4>
+          <div *ngFor="let msg of sentMessages" class="sent-message-item">
+            <div class="sent-message-header">
+              <span class="sent-author">{{ msg.author.name }}</span>
+              <span class="sent-type">{{ msg.type }}</span>
+            </div>
+            <p class="sent-content">{{ msg.content }}</p>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -298,14 +370,129 @@ interface MessageResult {
       transform: none;
     }
 
-    /* Workspace Created Placeholder */
-    .workspace-created {
-      padding: 2rem;
-      background: #f0fdf4;
+    /* Workspace Info Card */
+    .workspace-info-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
       border: 2px solid #86efac;
       border-radius: 12px;
-      text-align: center;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .workspace-info-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .check-icon {
+      width: 28px;
+      height: 28px;
+      background: #22c55e;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .workspace-info-header h4 {
+      margin: 0;
       color: #166534;
+      font-size: 1.1rem;
+    }
+
+    .workspace-type-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      background: #bbf7d0;
+      color: #166534;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 0.5rem;
+    }
+
+    .workspace-description {
+      margin: 0.75rem 0;
+      color: #15803d;
+      font-size: 0.9rem;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: #166534;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+      opacity: 0.8;
+    }
+
+    .reset-btn:hover {
+      opacity: 1;
+    }
+
+    /* Sent Messages List */
+    .sent-messages {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: #f9fafb;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .sent-messages h4 {
+      margin: 0 0 1rem 0;
+      color: #374151;
+      font-size: 1rem;
+    }
+
+    .sent-message-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .sent-message-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .sent-message-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .sent-author {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 0.9rem;
+    }
+
+    .sent-type {
+      padding: 0.1rem 0.4rem;
+      background: #e0e7ff;
+      color: #4338ca;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .sent-content {
+      margin: 0;
+      color: #4b5563;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
   `]
 })
@@ -371,10 +558,10 @@ export class Task2Component {
 
     const payload = this.workspaceForm.value;
 
-    this.http.post<WorkspaceResult>('/api/workspaces', payload).subscribe({
-      next: (workspace) => {
-        this.createdWorkspace = workspace;
-        this.success = `Workspace "${workspace.name}" created successfully!`;
+    this.http.post<{ success: boolean; data: WorkspaceResult }>('/api/workspaces', payload).subscribe({
+      next: (response) => {
+        this.createdWorkspace = response.data;
+        this.success = `Workspace "${response.data.name}" created successfully!`;
         this.loading = false;
         this.workspaceForm.reset({ type: 'public' });
       },
@@ -383,5 +570,54 @@ export class Task2Component {
         this.loading = false;
       }
     });
+  }
+
+  // Send message to the created workspace
+  sendMessage(): void {
+    if (this.messageForm.invalid || !this.createdWorkspace) {
+      this.messageForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    this.success = null;
+
+    const payload = {
+      content: this.messageForm.value.content,
+      author: {
+        name: this.messageForm.value.authorName
+      },
+      type: this.messageForm.value.type
+    };
+
+    this.http.post<{ success: boolean; data: MessageResult }>(
+      `/api/workspaces/${this.createdWorkspace._id}/messages`,
+      payload
+    ).subscribe({
+      next: (response) => {
+        this.sentMessages.push(response.data);
+        this.success = 'Message sent successfully!';
+        this.loading = false;
+        // Reset content field and mark it as untouched to avoid validation error
+        this.messageForm.patchValue({ content: '' });
+        this.messageForm.get('content')?.markAsUntouched();
+        this.messageForm.get('content')?.markAsPristine();
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Failed to send message';
+        this.loading = false;
+      }
+    });
+  }
+
+  // Reset everything and start over
+  resetForms(): void {
+    this.createdWorkspace = null;
+    this.sentMessages = [];
+    this.error = null;
+    this.success = null;
+    this.workspaceForm.reset({ type: 'public' });
+    this.messageForm.reset({ authorName: 'Anonymous User', type: 'text' });
   }
 }

@@ -82,15 +82,12 @@ interface Workspace {
         </div>
       </div>
 
-      <!-- Error State -->
       <div *ngIf="error" class="error">
         <p>{{ error }}</p>
         <button (click)="loadWorkspaceAndMessages()">Try Again</button>
       </div>
 
-      <!-- Messages Display (only show when not loading and no error) -->
       <div *ngIf="!loading && !error" class="messages-container">
-        <!-- Workspace Selector -->
         <div *ngIf="workspaces.length > 1" class="workspace-selector">
           <label for="workspace-select">Switch Workspace:</label>
           <select 
@@ -103,14 +100,12 @@ interface Workspace {
           </select>
         </div>
 
-        <!-- Workspace Header -->
         <div *ngIf="workspace" class="workspace-header">
           <h3>{{ workspace.name }}</h3>
           <span class="workspace-type">{{ workspace.type }}</span>
           <span class="message-count">{{ totalMessages }} {{ totalMessages === 1 ? 'message' : 'messages' }}</span>
         </div>
 
-        <!-- Auto-refresh Controls -->
         <div class="refresh-controls">
           <button 
             class="refresh-btn" 
@@ -126,7 +121,6 @@ interface Workspace {
           </span>
         </div>
 
-        <!-- Search Box -->
         <div class="search-container">
           <input 
             type="text" 
@@ -142,20 +136,16 @@ interface Workspace {
           </button>
         </div>
 
-        <!-- Empty State -->
         <div *ngIf="messages.length === 0" class="empty-state">
           <p>No messages yet. Be the first to send a message!</p>
         </div>
 
-        <!-- Messages List -->
         <div class="messages-list" #messagesContainer (scroll)="onMessagesScroll($event)">
           <ng-container *ngFor="let message of filteredMessages; let i = index">
-            <!-- Date Separator -->
             <div *ngIf="shouldShowDateSeparator(i)" class="date-separator">
               <span class="date-label">{{ getDateGroup(message.createdAt) }}</span>
             </div>
             
-            <!-- Message Item -->
             <div class="message-item">
               <div class="avatar" [style.background-color]="getAvatarColor(message.author.name)">
                 {{ getInitials(message.author.name) }}
@@ -174,7 +164,6 @@ interface Workspace {
           </ng-container>
         </div>
 
-        <!-- Scroll to Bottom Button (shows when scrolled up) -->
         <button 
           *ngIf="showScrollButton && messages.length > 0" 
           class="scroll-btn"
@@ -183,7 +172,6 @@ interface Workspace {
           ↓ New Messages
         </button>
 
-        <!-- Load More Button -->
         <div *ngIf="messages.length > 0" class="load-more-container">
           <button 
             *ngIf="hasMore" 
@@ -195,6 +183,49 @@ interface Workspace {
           <p *ngIf="!hasMore" class="no-more-messages">
             All messages loaded
           </p>
+        </div>
+
+        <div class="send-message-container">
+          <div class="send-message-header">
+            <span class="send-icon">💬</span>
+            <span>Send a Message</span>
+          </div>
+          
+          <div class="send-input-row">
+            <label for="authorName">Your Name:</label>
+            <input 
+              type="text" 
+              id="authorName"
+              class="author-input"
+              [(ngModel)]="authorName"
+              placeholder="Enter your name"
+            />
+          </div>
+          
+          <div class="send-input-row message-row">
+            <textarea 
+              class="message-textarea"
+              [(ngModel)]="newMessageContent"
+              placeholder="Type your message here..."
+              rows="3"
+              (keydown.enter)="$event.ctrlKey && sendMessage()"
+            ></textarea>
+            <button 
+              class="send-btn"
+              (click)="sendMessage()"
+              [disabled]="sending || !newMessageContent.trim()">
+              {{ sending ? 'Sending...' : 'Send' }}
+            </button>
+          </div>
+          
+          <p class="send-hint">Press Ctrl+Enter to send</p>
+          
+          <div *ngIf="sendSuccess" class="send-success">
+            ✓ {{ sendSuccess }}
+          </div>
+          <div *ngIf="sendError" class="send-error">
+            ✗ {{ sendError }}
+          </div>
         </div>
 
       </div>
@@ -724,6 +755,133 @@ interface Workspace {
       font-style: italic;
     }
 
+    /* Send Message Form */
+    .send-message-container {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+    }
+
+    .send-message-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .send-icon {
+      font-size: 1.2rem;
+    }
+
+    .send-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .send-input-row label {
+      font-size: 0.9rem;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .author-input {
+      flex: 1;
+      max-width: 250px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .author-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .message-row {
+      align-items: flex-end;
+    }
+
+    .message-textarea {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 60px;
+      transition: all 0.2s;
+    }
+
+    .message-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .message-textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    .send-btn {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .send-hint {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .send-success {
+      margin-top: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .send-error {
+      margin-top: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: #fee2e2;
+      color: #dc2626;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
   `]
 })
 export class Task1Component implements OnInit, OnDestroy {
@@ -753,6 +911,13 @@ export class Task1Component implements OnInit, OnDestroy {
   
   // Scroll
   showScrollButton: boolean = false;     // Show/hide scroll to bottom button
+  
+  // Send Message
+  newMessageContent: string = '';        // Message input value
+  authorName: string = 'Anonymous User'; // Default author name
+  sending: boolean = false;              // Sending state
+  sendSuccess: string | null = null;     // Success message
+  sendError: string | null = null;       // Error message
 
   constructor(private http: HttpClient) { }
 
@@ -910,6 +1075,58 @@ export class Task1Component implements OnInit, OnDestroy {
         this.loading = false;
         this.error = 'Failed to load messages.';
         console.error('Error fetching messages:', err);
+      }
+    });
+  }
+
+  // Send a new message to the current workspace
+  sendMessage() {
+    if (!this.workspace || !this.newMessageContent.trim()) return;
+    
+    this.sending = true;
+    this.sendError = null;
+    this.sendSuccess = null;
+    
+    const messageData = {
+      content: this.newMessageContent.trim(),
+      author: {
+        name: this.authorName || 'Anonymous User'
+      },
+      type: 'text'
+    };
+    
+    this.http.post<{ success: boolean; data: Message }>(
+      `/api/workspaces/${this.workspace._id}/messages`,
+      messageData
+    ).subscribe({
+      next: (response) => {
+        // Add the new message to the END of the list (newest at bottom)
+        if (response.data) {
+          this.messages = [...this.messages, response.data];
+          this.totalMessages++;
+        }
+        this.newMessageContent = '';
+        this.sending = false;
+        this.sendSuccess = 'Message sent!';
+        this.lastRefreshed = new Date();
+        
+        // Auto-scroll to show the new message
+        setTimeout(() => this.scrollToBottom(), 100);
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.sendSuccess = null;
+        }, 3000);
+      },
+      error: (err) => {
+        this.sending = false;
+        this.sendError = 'Failed to send message. Please try again.';
+        console.error('Error sending message:', err);
+        
+        // Clear error after 5 seconds
+        setTimeout(() => {
+          this.sendError = null;
+        }, 5000);
       }
     });
   }
