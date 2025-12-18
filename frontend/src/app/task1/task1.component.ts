@@ -149,21 +149,29 @@ interface Workspace {
 
         <!-- Messages List -->
         <div class="messages-list">
-          <div *ngFor="let message of filteredMessages" class="message-item">
-            <div class="avatar" [style.background-color]="getAvatarColor(message.author.name)">
-              {{ getInitials(message.author.name) }}
+          <ng-container *ngFor="let message of filteredMessages; let i = index">
+            <!-- Date Separator -->
+            <div *ngIf="shouldShowDateSeparator(i)" class="date-separator">
+              <span class="date-label">{{ getDateGroup(message.createdAt) }}</span>
             </div>
-            <div class="message-body">
-              <div class="message-header">
-                <span class="author">{{ message.author.name }}</span>
-                <span class="message-type" [class]="message.type">{{ message.type }}</span>
-                <span class="timestamp">{{ formatDate(message.createdAt) }}</span>
+            
+            <!-- Message Item -->
+            <div class="message-item">
+              <div class="avatar" [style.background-color]="getAvatarColor(message.author.name)">
+                {{ getInitials(message.author.name) }}
               </div>
-              <div class="message-content">
-                {{ message.content }}
+              <div class="message-body">
+                <div class="message-header">
+                  <span class="author">{{ message.author.name }}</span>
+                  <span class="message-type" [class]="message.type">{{ message.type }}</span>
+                  <span class="timestamp">{{ formatDate(message.createdAt) }}</span>
+                </div>
+                <div class="message-content">
+                  {{ message.content }}
+                </div>
               </div>
             </div>
-          </div>
+          </ng-container>
         </div>
 
         <!-- Load More Button -->
@@ -557,6 +565,32 @@ interface Workspace {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+    }
+
+    /* Date Separator */
+    .date-separator {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+
+    .date-separator::before,
+    .date-separator::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+    }
+
+    .date-label {
+      padding: 0.25rem 1rem;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
     }
 
     .message-item {
@@ -1073,6 +1107,44 @@ export class Task1Component implements OnInit, OnDestroy {
     }
     
     return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Get the date group label for a message (Today, Yesterday, or formatted date)
+  getDateGroup(dateString: string): string {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    // Reset time for comparison
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    
+    if (dateOnly.getTime() === todayOnly.getTime()) {
+      return 'Today';
+    } else if (dateOnly.getTime() === yesterdayOnly.getTime()) {
+      return 'Yesterday';
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        month: 'long', 
+        day: 'numeric',
+        year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+      });
+    }
+  }
+
+  // Check if this message should show a date separator
+  // (i.e., it's the first message of a new date group)
+  shouldShowDateSeparator(index: number): boolean {
+    const messages = this.filteredMessages;
+    if (index === 0) return true; // Always show for first message
+    
+    const currentDate = this.getDateGroup(messages[index].createdAt);
+    const previousDate = this.getDateGroup(messages[index - 1].createdAt);
+    
+    return currentDate !== previousDate;
   }
 
   // Helper method to format date as relative time (e.g., "5 minutes ago")
