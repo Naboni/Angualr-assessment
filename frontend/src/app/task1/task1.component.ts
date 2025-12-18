@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 // Optional: You can use the MessageService from services/message.service.ts instead of HttpClient directly
@@ -77,6 +77,22 @@ interface Workspace {
           <h3>{{ workspace.name }}</h3>
           <span class="workspace-type">{{ workspace.type }}</span>
           <span class="message-count">{{ totalMessages }} {{ totalMessages === 1 ? 'message' : 'messages' }}</span>
+        </div>
+
+        <!-- Auto-refresh Controls -->
+        <div class="refresh-controls">
+          <button 
+            class="refresh-btn" 
+            (click)="toggleAutoRefresh()"
+            [class.active]="autoRefreshEnabled">
+            {{ autoRefreshEnabled ? '⏸ Pause' : '▶ Resume' }} Auto-refresh
+          </button>
+          <button class="refresh-btn manual" (click)="refreshMessages()">
+            🔄 Refresh Now
+          </button>
+          <span class="last-updated">
+            Last updated: {{ formatDate(lastRefreshed.toISOString()) }}
+          </span>
         </div>
 
         <!-- Empty State -->
@@ -187,6 +203,56 @@ interface Workspace {
       font-weight: 500;
     }
 
+    /* Refresh Controls */
+    .refresh-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      flex-wrap: wrap;
+    }
+
+    .refresh-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      color: #374151;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    .refresh-btn.active {
+      background: #dbeafe;
+      border-color: #60a5fa;
+      color: #1d4ed8;
+    }
+
+    .refresh-btn.manual {
+      background: #ecfdf5;
+      border-color: #6ee7b7;
+      color: #047857;
+    }
+
+    .refresh-btn.manual:hover {
+      background: #d1fae5;
+    }
+
+    .last-updated {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
     /* Empty State */
     .empty-state {
       text-align: center;
@@ -283,7 +349,7 @@ interface Workspace {
     }
   `]
 })
-export class Task1Component implements OnInit {
+export class Task1Component implements OnInit, OnDestroy {
   messages: Message[] = [];           // Stores fetched messages
   workspace: Workspace | null = null; // Current workspace info
   loading: boolean = true;            // Shows loading spinner
@@ -291,11 +357,65 @@ export class Task1Component implements OnInit {
   currentPage: number = 1;            // Current page for pagination
   hasMore: boolean = true;            // Are there more messages to load?
   totalMessages: number = 0;          // Total message count from API
+  
+  // Auto-refresh properties
+  private refreshInterval: any = null;   // Stores interval reference
+  refreshSeconds: number = 30;           // Refresh every 30 seconds
+  lastRefreshed: Date = new Date();      // Track last refresh time
+  autoRefreshEnabled: boolean = true;    // Toggle for auto-refresh
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.loadWorkspaceAndMessages();
+    this.startAutoRefresh();
+  }
+
+  // Cleanup when component is destroyed (prevents memory leaks)
+  ngOnDestroy() {
+    this.stopAutoRefresh();
+  }
+
+  // Start auto-refresh interval
+  startAutoRefresh() {
+    if (this.refreshInterval) return; // Already running
+    
+    this.refreshInterval = setInterval(() => {
+      if (this.autoRefreshEnabled && this.workspace && !this.loading) {
+        this.refreshMessages();
+      }
+    }, this.refreshSeconds * 1000);
+  }
+
+  // Stop auto-refresh interval
+  stopAutoRefresh() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+  // Refresh messages without showing loading spinner
+  refreshMessages() {
+    if (!this.workspace) return;
+    
+    this.http.get<{ success: boolean; data: Message[]; page: number; pages: number; total: number }>(
+      `/api/workspaces/${this.workspace._id}/messages`
+    ).subscribe({
+      next: (response) => {
+        this.messages = response.data || [];
+        this.totalMessages = response.total || this.messages.length;
+        this.lastRefreshed = new Date();
+      },
+      error: (err) => {
+        console.error('Error refreshing messages:', err);
+      }
+    });
+  }
+
+  // Toggle auto-refresh on/off
+  toggleAutoRefresh() {
+    this.autoRefreshEnabled = !this.autoRefreshEnabled;
   }
 
   // Fetches workspaces, then fetches messages for the first workspace
