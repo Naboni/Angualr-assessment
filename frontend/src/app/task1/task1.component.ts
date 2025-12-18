@@ -76,6 +76,7 @@ interface Workspace {
         <div *ngIf="workspace" class="workspace-header">
           <h3>{{ workspace.name }}</h3>
           <span class="workspace-type">{{ workspace.type }}</span>
+          <span class="message-count">{{ totalMessages }} {{ totalMessages === 1 ? 'message' : 'messages' }}</span>
         </div>
 
         <!-- Empty State -->
@@ -174,6 +175,16 @@ interface Workspace {
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
+    }
+
+    .message-count {
+      margin-left: auto;
+      padding: 0.25rem 0.75rem;
+      background: #f3f4f6;
+      color: #6b7280;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
 
     /* Empty State */
@@ -279,6 +290,7 @@ export class Task1Component implements OnInit {
   error: string | null = null;        // Stores error message if API fails
   currentPage: number = 1;            // Current page for pagination
   hasMore: boolean = true;            // Are there more messages to load?
+  totalMessages: number = 0;          // Total message count from API
 
   constructor(private http: HttpClient) { }
 
@@ -316,13 +328,14 @@ export class Task1Component implements OnInit {
 
   // Fetches messages for a specific workspace
   loadMessages(workspaceId: string) {
-    this.http.get<{ success: boolean; data: Message[]; page: number; pages: number }>(
+    this.http.get<{ success: boolean; data: Message[]; page: number; pages: number; total: number }>(
       `/api/workspaces/${workspaceId}/messages`
     ).subscribe({
       next: (response) => {
         this.messages = response.data || [];
         this.currentPage = response.page;
         this.hasMore = response.page < response.pages;
+        this.totalMessages = response.total || this.messages.length;
         this.loading = false;
       },
       error: (err) => {
