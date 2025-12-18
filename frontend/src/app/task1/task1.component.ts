@@ -86,13 +86,18 @@ interface Workspace {
         <!-- Messages List -->
         <div class="messages-list">
           <div *ngFor="let message of messages" class="message-item">
-            <div class="message-header">
-              <span class="author">{{ message.author.name }}</span>
-              <span class="message-type" [class]="message.type">{{ message.type }}</span>
-              <span class="timestamp">{{ formatDate(message.createdAt) }}</span>
+            <div class="avatar" [style.background-color]="getAvatarColor(message.author.name)">
+              {{ getInitials(message.author.name) }}
             </div>
-            <div class="message-content">
-              {{ message.content }}
+            <div class="message-body">
+              <div class="message-header">
+                <span class="author">{{ message.author.name }}</span>
+                <span class="message-type" [class]="message.type">{{ message.type }}</span>
+                <span class="timestamp">{{ formatDate(message.createdAt) }}</span>
+              </div>
+              <div class="message-content">
+                {{ message.content }}
+              </div>
             </div>
           </div>
         </div>
@@ -188,6 +193,8 @@ interface Workspace {
     }
 
     .message-item {
+      display: flex;
+      gap: 1rem;
       background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 8px;
@@ -197,6 +204,24 @@ interface Workspace {
 
     .message-item:hover {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .message-body {
+      flex: 1;
+      min-width: 0;
     }
 
     .message-header {
@@ -306,6 +331,40 @@ export class Task1Component implements OnInit {
         console.error('Error fetching messages:', err);
       }
     });
+  }
+
+  // Get initials from a name (e.g., "John Doe" -> "JD")
+  getInitials(name: string): string {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+    return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+  }
+
+  // Generate a consistent color based on the name
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#f87171', // red
+      '#fb923c', // orange
+      '#fbbf24', // amber
+      '#a3e635', // lime
+      '#34d399', // emerald
+      '#22d3ee', // cyan
+      '#60a5fa', // blue
+      '#a78bfa', // violet
+      '#f472b6', // pink
+      '#e879f9', // fuchsia
+    ];
+    
+    // Create a simple hash from the name to pick a consistent color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 2) - hash);
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
   }
 
   // Helper method to format date as relative time (e.g., "5 minutes ago")
