@@ -101,26 +101,149 @@ interface Workspace {
   `,
   styles: [`
     .task1-container {
-      max-width: 1200px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 1rem;
     }
+
     .task-description {
       color: #666;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       line-height: 1.6;
     }
-    .placeholder {
-      padding: 3rem;
+
+    /* Loading State */
+    .loading {
       text-align: center;
-      background: #f5f5f5;
-      border-radius: 8px;
-      color: #999;
+      padding: 3rem;
+      color: #667eea;
+      font-size: 1.1rem;
     }
-    .hint {
-      font-size: 0.9rem;
+
+    /* Error State */
+    .error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      color: #dc2626;
+    }
+
+    .error button {
       margin-top: 1rem;
-      color: #aaa;
+      padding: 0.5rem 1.5rem;
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .error button:hover {
+      background: #b91c1c;
+    }
+
+    /* Workspace Header */
+    .workspace-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .workspace-header h3 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #1f2937;
+    }
+
+    .workspace-type {
+      padding: 0.25rem 0.75rem;
+      background: #e0e7ff;
+      color: #4338ca;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      color: #6b7280;
+    }
+
+    /* Messages List */
+    .messages-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .message-item {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .message-item:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .author {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .message-type {
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .message-type.text {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .message-type.file {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .message-type.system {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+
+    .timestamp {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .message-content {
+      color: #374151;
+      line-height: 1.5;
+      white-space: pre-wrap;
     }
   `]
 })
